@@ -10,10 +10,10 @@ function LoginForm() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Replace this URL with your actual backend API endpoint
-    const url = 'https://your-backend-api.com/api/login';
+    const url = 'http://localhost:8080/api/v1/auth/authenticate';
 
     try {
+      console.log(JSON.stringify({ email, password }))
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -23,9 +23,9 @@ function LoginForm() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const token = await response.text();
         // Save the token or user data to localStorage or your state management system
-        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('authToken', token);
         navigate('/dashboard');
       } else {
         // Show an error message to the user
