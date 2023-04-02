@@ -1,6 +1,6 @@
 import React from "react";
 import { Container, Typography } from "@mui/material";
-import {withAuth} from '../guards/withAuth'
+import withAuth from '../guards/withAuth'
 
 function Dashboard() {
   return (
@@ -11,4 +11,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default withAuth(Dashboard);
