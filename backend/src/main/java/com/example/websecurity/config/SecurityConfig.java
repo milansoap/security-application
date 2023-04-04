@@ -24,6 +24,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.security.auth.login.AccountLockedException;
+import java.sql.SQLException;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -72,7 +75,11 @@ public class SecurityConfig {
        return new UserDetailsService() {
            @Override
            public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-               return userDao.findUserByEmail(email);
+               try {
+                   return userDao.findUserByEmail(email);
+               } catch (SQLException | AccountLockedException e) {
+                   throw new RuntimeException(e);
+               }
            }
        };
     }

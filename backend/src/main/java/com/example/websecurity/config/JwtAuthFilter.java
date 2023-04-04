@@ -14,7 +14,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.security.auth.login.AccountLockedException;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -43,7 +45,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         userEmail = jwtUtils.extractUsername(jwtToken);
 
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDao.findUserByEmail(userEmail);
+            UserDetails userDetails = null;
+            try {
+                userDetails = userDao.findUserByEmail(userEmail);
+            } catch (SQLException | AccountLockedException e) {
+                throw new RuntimeException(e);
+            }
 
             if (jwtUtils.validateToken(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

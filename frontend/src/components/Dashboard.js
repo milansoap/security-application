@@ -10,6 +10,11 @@ function Dashboard() {
     // TODO: handle form submission
   };
 
+  function handleClearStorage() {
+    localStorage.clear();
+    window.location.reload(); // reload the page to reflect changes
+  }
+  
   return (
     <Container maxWidth="lg">
       <Typography variant="h4">Dashboard</Typography>
@@ -21,6 +26,7 @@ function Dashboard() {
           onChange={(e) => setInputValue(e.target.value)}
         />
         <Button type="submit" variant="contained">Submit</Button>
+        <button onClick={handleClearStorage}>Clear Local Storage</button>
       </form>
       <Typography variant="body1">{inputValue}</Typography>
     </Container>

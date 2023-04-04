@@ -27,11 +27,31 @@ function LoginForm() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
+    if (!email.trim().length) {
+      setMessage("Please insert email");
+      return;
+    }
+  
+    if (!password.trim().length) {
+      setMessage("Please insert Password");
+      return;
+    }
+  
+    if (password.length < 8) {
+      setMessage('Password must be at least 8 characters');
+      return;
+    }
+    
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!regex.test(email)) {
+      setMessage('Invalid email format');
+      return;
+    }
+  
     const url = 'http://localhost:8080/api/v1/auth/authenticate';
-
+  
     try {
-      console.log(JSON.stringify({ email, password }));
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -39,20 +59,30 @@ function LoginForm() {
         },
         body: JSON.stringify({ email, password }),
       });
-
+  
       if (response.ok) {
         const token = await response.text();
         localStorage.setItem('authToken', token);
         localStorage.setItem('userEmail', email);
         navigate('/dashboard');
+      } else if (response.status === 401) {
+        const errorData = await response.text();
+        console.log(errorData)
+        if (errorData.includes('Account is locked')) {
+          setMessage("Your account has been blocked. Please try again later");
+        } else {
+          setMessage('Invalid credentials. Please try again.');
+        }
       } else {
-        setMessage('Invalid email or password. Please try again.');
+        setMessage('There was an error please try again later.');
       }
     } catch (error) {
       console.error('Error:', error);
       setMessage('There was an error please try again later.');
     }
   };
+  
+
 
   return (
     <>

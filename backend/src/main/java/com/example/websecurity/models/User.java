@@ -3,6 +3,9 @@ package com.example.websecurity.models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Entity
 @Table
 public class User {
@@ -12,9 +15,40 @@ public class User {
 
     @Column(name = "email")
     private String email;
-
     @Column(name = "password")
     private String password;
+    @Column(name = "account_locked")
+    private boolean accountLocked;
+    @Column(name = "failed_attempt")
+    private int failedAttempt;
+    @Column(name = "lock_time")
+    private LocalDateTime lockTime;
+
+
+    public boolean isAccountLocked() {
+        return accountLocked;
+    }
+
+    public void setAccountLocked(boolean accountLocked) {
+        this.accountLocked = accountLocked;
+    }
+
+    public int getFailedAttempt() {
+        return failedAttempt;
+    }
+
+    public void setFailedAttempt(int failedAttempt) {
+        this.failedAttempt = failedAttempt;
+    }
+
+    public LocalDateTime getLockTime() {
+        return lockTime;
+    }
+
+    public void setLockTime(LocalDateTime lockTime) {
+        this.lockTime = lockTime;
+    }
+
 
     public User(String email, String password) {
         this.email = email;
