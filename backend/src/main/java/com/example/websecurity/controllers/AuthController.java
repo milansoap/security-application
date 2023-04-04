@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,20 +24,25 @@ public class AuthController {
     private final UserDetailsService userDetailsService;
     private final JWTUtill jwtUtill;
 
+
     @PostMapping("/authenticate")
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+        System.out.print(request.getEmail());
+        System.out.print(request.getPassword());
         final UserDetails user = userDetailsService.loadUserByUsername(request.getEmail());
+        System.out.print(user);
         if (user != null) {
+            System.out.print("ERROR");
             return ResponseEntity.ok(jwtUtill.generateToken(user));
         }
         else {
+            System.out.print("ERROR");
             return ResponseEntity.status(400).body("Some error has occured");
         }
-
     }
 
     @PostMapping("/validateToken")

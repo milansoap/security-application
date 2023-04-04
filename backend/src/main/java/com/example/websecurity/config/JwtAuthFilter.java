@@ -25,8 +25,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final UserDao userDao;
     private final JWTUtill jwtUtils;
 
-
-
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
