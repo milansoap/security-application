@@ -26,7 +26,7 @@ function Dashboard() {
           onChange={(e) => setInputValue(e.target.value)}
         />
         <Button type="submit" variant="contained">Submit</Button>
-        <button onClick={handleClearStorage}>Clear Local Storage</button>
+        <button onClick={handleClearStorage}>Logout</button>
       </form>
       <Typography variant="body1">{inputValue}</Typography>
     </Container>
@@ -34,4 +34,3 @@ function Dashboard() {
 }
 
 export default withAuth(Dashboard);
-

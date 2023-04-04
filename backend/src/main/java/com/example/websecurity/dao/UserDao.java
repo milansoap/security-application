@@ -68,6 +68,7 @@ public class UserDao {
             if (accountLocked) {
                 LocalDateTime currentTime = LocalDateTime.now();
                 if (lockTime != null && currentTime.isAfter(lockTime)) {
+                    System.out.println(currentTime.isAfter(lockTime));
                     // Unlock the account and reset the failed attempts
                     unlockAccount(email);
                 } else {
@@ -76,8 +77,6 @@ public class UserDao {
             } else if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
                 lockAccount(email);
             }
-
-            updateUserFailedAttempts(email);
 
             return new User(emailResult, passwordResult, Collections.emptyList());
         } else {
