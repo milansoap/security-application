@@ -47,7 +47,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = null;
             try {
-                userDetails = userDao.findUserByEmail(userEmail);
+                userDetails = userDao.findUserByEmail(userEmail, "basicLogin");
             } catch (SQLException | AccountLockedException e) {
                 throw new RuntimeException(e);
             }

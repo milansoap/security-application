@@ -33,7 +33,6 @@ public class UserDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final BCryptPasswordEncoder passwordEncoder;
-
     private static final int MAX_FAILED_ATTEMPTS = 5;
 
     @Autowired
@@ -42,7 +41,7 @@ public class UserDao {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserDetails findUserByEmail(String email) throws SQLException, AccountLockedException {
+    public UserDetails findUserByEmail(String email, String loginType) throws SQLException, AccountLockedException {
         if (email == null || email.isEmpty()) {
             throw new IllegalArgumentException("Email cannot be null or empty");
         }
