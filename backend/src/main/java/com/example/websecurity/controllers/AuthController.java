@@ -82,4 +82,18 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
         }
     }
+
+    @PostMapping("/submitForm")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<?> submitForm(@RequestBody String formData, @RequestHeader("Authorization") String token) {
+        boolean isValid = jwtUtill.validateTokenAdmin(token);
+
+        if (isValid) {
+            System.out.println(formData + " - Success");
+            return ResponseEntity.ok("Form submitted successfully");
+        } else {
+            System.out.println(formData + " - Token not ok");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+        }
+    }
 }
