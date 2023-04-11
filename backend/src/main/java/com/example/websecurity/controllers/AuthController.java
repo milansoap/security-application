@@ -75,7 +75,11 @@ public class AuthController {
     public ResponseEntity<Boolean> validateToken(@RequestBody Map<String, String> request) {
         String token = request.get("token");
 
-        boolean isValid = jwtUtill.validateTokenNoEmail(token);
-        return ResponseEntity.ok(isValid);
+        boolean isValid = jwtUtill.validateTokenAdmin(token);
+        if (isValid) {
+            return ResponseEntity.ok(true);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+        }
     }
 }

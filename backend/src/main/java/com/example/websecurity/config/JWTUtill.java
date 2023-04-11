@@ -1,9 +1,11 @@
 package com.example.websecurity.config;
 
 
+import com.example.websecurity.dao.UserDao;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import java.util.function.Function;
 
 @Service
 public class JWTUtill {
+    @Autowired
+    private UserDao userDao;
 
     private String SECRET_KEY = "(Wx%;i-Pr&SyYQ1MPKTU33GqGKg/WQ{t\"SkjB3`[2ZJ,T\"jWW9q}P+p9jtr%Hy{";
 
@@ -43,7 +47,7 @@ public class JWTUtill {
     public String generateToken(UserDetails userDetails) {
         System.out.println(userDetails);
         Map<String, Object> claims = new HashMap<>();
-        claims.put("permissions", "permissionsExample"); // replace "example_permission" with the actual permissions you want to include
+        claims.put("permissions", "adminPermission");
         return createToken(claims, userDetails.getUsername());
     }
 
@@ -60,11 +64,14 @@ public class JWTUtill {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    public Boolean validateTokenNoEmail(String token) {
+    public Boolean validateTokenAdmin(String token) {
         try {
             extractAllClaims(token);
             boolean isExpired = isTokenExpired(token);
-            return !isExpired;
+            boolean isAdmin = userDao.findIfUserIsAdmin(extractUsername(token));
+            System.out.println("is expired" + isExpired);
+            System.out.println("is admin" + isAdmin);
+            return !isExpired && isAdmin;
         } catch (Exception e) {
             return false;
         }

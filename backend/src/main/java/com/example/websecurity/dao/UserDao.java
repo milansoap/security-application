@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -104,6 +105,32 @@ public class UserDao {
             }
         } else {
             throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+    }
+
+    public boolean findIfUserIsAdmin(String email) throws SQLException {
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
+        String regex = "^(.+)@(.+)$";
+        Pattern pattern = Pattern.compile(regex);
+        if (!pattern.matcher(email).matches()) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+
+        String sql = "SELECT administrator FROM user WHERE email = ?";
+        try (
+                Connection connection = jdbcTemplate.getDataSource().getConnection();
+                PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    int adminFlag = rs.getInt("administrator");
+                    return adminFlag == 1;
+                } else {
+                    throw new UsernameNotFoundException("User not found with email: " + email);
+                }
+            }
         }
     }
 
