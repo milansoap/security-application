@@ -3,6 +3,7 @@ package com.example.websecurity.config;
 import com.example.websecurity.components.CustomOAuth2FailureHandler;
 import com.example.websecurity.components.CustomOAuth2SuccessHandler;
 import com.example.websecurity.dao.UserDao;
+import com.example.websecurity.exceptions.LoginWayException;
 import io.jsonwebtoken.Jwt;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +95,7 @@ public class SecurityConfig {
            public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
                try {
                    return userDao.findUserByEmail(email, "basicLogin");
-               } catch (SQLException | AccountLockedException e) {
+               } catch (SQLException | AccountLockedException | LoginWayException e) {
                    throw new RuntimeException(e);
                }
            }

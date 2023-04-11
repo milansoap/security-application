@@ -1,6 +1,7 @@
 package com.example.websecurity.config;
 
 import com.example.websecurity.dao.UserDao;
+import com.example.websecurity.exceptions.LoginWayException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,7 +49,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             UserDetails userDetails = null;
             try {
                 userDetails = userDao.findUserByEmail(userEmail, "basicLogin");
-            } catch (SQLException | AccountLockedException e) {
+            } catch (SQLException | AccountLockedException | LoginWayException e) {
                 throw new RuntimeException(e);
             }
 
