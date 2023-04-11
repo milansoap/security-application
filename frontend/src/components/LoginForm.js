@@ -69,7 +69,11 @@ function LoginForm() {
         console.log(errorData)
         if (errorData.includes('Account is locked')) {
           setMessage("Your account has been blocked. Please try again later");
-        } else {
+        }
+        if (errorData.includes('Wrong type of login')) {
+          setMessage("You tried loggin in using password, which is not the authentication method you used during sing up. Please try again using the authentication method you used during sing up");
+        }
+        else {
           setMessage('Invalid credentials. Please try again.');
         }
       } else {
@@ -128,6 +132,18 @@ function LoginForm() {
             >
               Login
             </Button>
+
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ mt: 2 }}
+              onClick={() => window.location.href = "http://localhost:8080/oauth2/authorization/google"}
+            >
+              GOOGLE LOGIN
+            </Button>
+
+            
           </form>
         </Container>
       </Box>

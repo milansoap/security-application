@@ -9,7 +9,6 @@ function withAuth(Component) {
     useEffect(() => {
       const checkToken = async () => {
         const token = localStorage.getItem('authToken');
-
         if (token) {
           try {
             const response = await fetch('http://localhost:8080/api/v1/auth/validateToken', {

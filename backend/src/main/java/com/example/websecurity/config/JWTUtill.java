@@ -17,7 +17,7 @@ import java.util.function.Function;
 @Service
 public class JWTUtill {
 
-    private String SECRET_KEY = "secret";
+    private String SECRET_KEY = "(Wx%;i-Pr&SyYQ1MPKTU33GqGKg/WQ{t\"SkjB3`[2ZJ,T\"jWW9q}P+p9jtr%Hy{";
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -39,10 +39,14 @@ public class JWTUtill {
         return extractExpiration(token).before(new Date());
     }
 
+
     public String generateToken(UserDetails userDetails) {
+        System.out.println(userDetails);
         Map<String, Object> claims = new HashMap<>();
+        claims.put("permissions", "permissionsExample"); // replace "example_permission" with the actual permissions you want to include
         return createToken(claims, userDetails.getUsername());
     }
+
 
     private String createToken(Map<String, Object> claims, String subject) {
 

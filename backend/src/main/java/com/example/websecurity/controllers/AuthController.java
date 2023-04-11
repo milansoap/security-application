@@ -1,6 +1,7 @@
 package com.example.websecurity.controllers;
 
 import com.example.websecurity.config.JWTUtill;
+import com.example.websecurity.dao.UserDao;
 import com.example.websecurity.dto.AuthenticationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ public class AuthController {
     private final UserDetailsService userDetailsService;
     private final JWTUtill jwtUtill;
     private final JdbcTemplate jdbcTemplate;
+    private final UserDao userDao;
 
 
 
@@ -37,6 +39,7 @@ public class AuthController {
             );
 
             final UserDetails user = userDetailsService.loadUserByUsername(request.getEmail());
+            System.out.println(user.toString());
 
             if (user != null) {
                 resetUserFailedAttempts(request.getEmail());
@@ -67,7 +70,6 @@ public class AuthController {
         updateUserFailedAttempts(email, true);
     }
 
-
     @PostMapping("/validateToken")
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<Boolean> validateToken(@RequestBody Map<String, String> request) {
@@ -76,5 +78,4 @@ public class AuthController {
         boolean isValid = jwtUtill.validateTokenNoEmail(token);
         return ResponseEntity.ok(isValid);
     }
-
 }
