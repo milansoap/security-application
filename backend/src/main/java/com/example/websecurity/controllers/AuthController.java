@@ -72,16 +72,8 @@ public class AuthController {
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<Boolean> validateToken(@RequestBody Map<String, String> request) {
         String token = request.get("token");
-        String email = request.get("email");
 
-        UserDetails userDetails = null;
-        try {
-            userDetails = userDetailsService.loadUserByUsername(email);
-        } catch (UsernameNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        boolean isValid = userDetails != null && jwtUtill.validateToken(token, userDetails);
+        boolean isValid = jwtUtill.validateTokenNoEmail(token);
         return ResponseEntity.ok(isValid);
     }
 

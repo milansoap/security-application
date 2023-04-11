@@ -9,16 +9,15 @@ function withAuth(Component) {
     useEffect(() => {
       const checkToken = async () => {
         const token = localStorage.getItem('authToken');
-        const email = localStorage.getItem('userEmail');
 
-        if (token && email) {
+        if (token) {
           try {
             const response = await fetch('http://localhost:8080/api/v1/auth/validateToken', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ token, email }),
+              body: JSON.stringify({ token }),
             });
 
             if (response.ok) {

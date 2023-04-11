@@ -63,7 +63,6 @@ function LoginForm() {
       if (response.ok) {
         const token = await response.text();
         localStorage.setItem('authToken', token);
-        localStorage.setItem('userEmail', email);
         navigate('/dashboard');
       } else if (response.status === 401) {
         const errorData = await response.text();

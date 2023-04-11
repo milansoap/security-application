@@ -56,5 +56,15 @@ public class JWTUtill {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
+    public Boolean validateTokenNoEmail(String token) {
+        try {
+            extractAllClaims(token);
+            boolean isExpired = isTokenExpired(token);
+            return !isExpired;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 
 }
