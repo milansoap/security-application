@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Typography, TextField, Button, Alert } from "@mui/material";
+import { Container, Typography, TextField, Button, Alert, Box } from "@mui/material";
 import withAuth from "../guards/withAuth";
 import { useNavigate } from "react-router-dom";
 
@@ -63,7 +63,7 @@ function Dashboard() {
         if (response.ok) {
           setMessageSuccess("Admin form submited successfully");
         } else {
-          setMessageFailed("admin authentication failed");
+          setMessageFailed("Admin authentication failed");
         }
       } catch (error) {
         console.error("Error:", error);
@@ -81,7 +81,10 @@ function Dashboard() {
 
   return (
     <Container maxWidth="lg">
-      <Typography variant="h4">Dashboard</Typography>
+      <Typography variant="h4" align="center" sx={{ mt: 4, mb: 4 }}>
+        Dashboard
+      </Typography>
+      <Container sx={{ mt: 4, mb: 4 }}>
       {messageSuccess && (
         <Alert severity="success" sx={{ mt: 2 }}>
           {messageSuccess}
@@ -92,31 +95,58 @@ function Dashboard() {
           {messageFailed}
         </Alert>
       )}
+      </Container>
+      
       <form onSubmit={handleSubmit}>
-        <TextField
-          id="input-field"
-          label="Input Field"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-        />
-        <Button type="submit" variant="contained">
-          Submit
-        </Button>
-        <Button onClick={handleClearStorage}>Logout</Button>
+      <Container sx={{ mt: 4, mb: 4 }}>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <TextField
+            id="input-field"
+            label="Input Field"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            fullWidth
+            variant="outlined"
+          />
+          <Button type="submit" variant="contained" color="primary">
+            Submit
+          </Button>
+        </Box>
+        </Container>
       </form>
-      <form onSubmit={handleAdminSubmit}>
-        <TextField
-          id="input-field"
-          label="Input Field Admin"
-          value={inputValueAdmin}
-          onChange={(e) => setInputValueAdmin(e.target.value)}
-        />
-        <Button type="submit" variant="contained">
-          Submit
-        </Button>
+
+      <Container sx={{ mt: 4, mb: 4 }}>
+      <form onSubmit={handleAdminSubmit} sx={{ mt: 4 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <TextField
+            id="input-field"
+            label="Input Field Admin"
+            value={inputValueAdmin}
+            onChange={(e) => setInputValueAdmin(e.target.value)}
+            fullWidth
+            variant="outlined"
+          />
+          <Button type="submit" variant="contained" color="primary">
+            Submit
+          </Button>
+        </Box>
       </form>
+      </Container>
+
+
+      <Button
+          onClick={handleClearStorage}
+          variant="outlined"
+          color="error"
+          sx={{ mt: 2, width: '100%' }}
+        >
+          Logout
+        </Button>
     </Container>
   );
+  
+  
 }
 
 export default withAuth(Dashboard);
