@@ -1,39 +1,76 @@
 import React, { useState } from "react";
 import { Container, Typography, TextField, Button, Alert } from "@mui/material";
-import withAuth from '../guards/withAuth'
-import { useNavigate } from 'react-router-dom';
+import withAuth from "../guards/withAuth";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const [inputValue, setInputValue] = useState("");
-  const [messageSuccess, setMessageSuccess] = useState('');
-  const [messageFailed, setMessageFailed] = useState('');
+  const [inputValueAdmin, setInputValueAdmin] = useState("");
+  const [messageSuccess, setMessageSuccess] = useState("");
+  const [messageFailed, setMessageFailed] = useState("");
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessageSuccess('');
-    setMessageFailed('');
-    const token = localStorage.getItem('authToken');
+    setMessageSuccess("");
+    setMessageFailed("");
+    const token = localStorage.getItem("authToken");
     if (token) {
       try {
-        const response = await fetch('http://localhost:8080/api/v1/auth/submitForm', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': token
-          },
-          body: JSON.stringify({ inputValue }),
-        });
+        const response = await fetch(
+          "http://localhost:8080/api/v1/auth/submitForm",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+            body: JSON.stringify({ inputValue }),
+          }
+        );
         if (response.ok) {
           setMessageSuccess("Form submited successfully");
         } else {
           setMessageFailed("authentication failed");
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
         setMessageFailed("error during submit");
       }
     } else {
-      navigate('/', { state: { isError: true } });
+      navigate("/", { state: { isError: true } });
+    }
+  };
+
+  const handleAdminSubmit = async (e) => {
+    e.preventDefault();
+    setMessageSuccess("");
+    setMessageFailed("");
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/v1/auth/submitFormAdmin",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+            body: JSON.stringify({ inputValue }),
+          }
+        );
+        if (response.ok) {
+          setMessageSuccess("Admin form submited successfully");
+        } else {
+          setMessageFailed("admin authentication failed");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        setMessageFailed("error during admin form submit");
+      }
+    } else {
+      navigate("/", { state: { isError: true } });
     }
   };
 
@@ -41,7 +78,7 @@ function Dashboard() {
     localStorage.clear();
     window.location.reload();
   }
-  
+
   return (
     <Container maxWidth="lg">
       <Typography variant="h4">Dashboard</Typography>
@@ -62,10 +99,22 @@ function Dashboard() {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
         />
-        <Button type="submit" variant="contained">Submit</Button>
+        <Button type="submit" variant="contained">
+          Submit
+        </Button>
         <Button onClick={handleClearStorage}>Logout</Button>
       </form>
-      <Typography variant="body1">{inputValue}</Typography>
+      <form onSubmit={handleAdminSubmit}>
+        <TextField
+          id="input-field"
+          label="Input Field Admin"
+          value={inputValueAdmin}
+          onChange={(e) => setInputValueAdmin(e.target.value)}
+        />
+        <Button type="submit" variant="contained">
+          Submit
+        </Button>
+      </form>
     </Container>
   );
 }

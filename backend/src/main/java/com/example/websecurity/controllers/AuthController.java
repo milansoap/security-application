@@ -3,6 +3,9 @@ package com.example.websecurity.controllers;
 import com.example.websecurity.config.JWTUtill;
 import com.example.websecurity.dao.UserDao;
 import com.example.websecurity.dto.AuthenticationRequest;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Refill;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.Map;
 
 @RestController
@@ -27,12 +31,17 @@ public class AuthController {
     private final JWTUtill jwtUtill;
     private final JdbcTemplate jdbcTemplate;
     private final UserDao userDao;
+    Bandwidth limit = Bandwidth.classic(20, Refill.greedy(20, Duration.ofMinutes(1)));
+    private final Bucket bucket = Bucket.builder().addLimit(limit).build();
 
 
 
     @PostMapping("/authenticate")
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest request) {
+        if(!bucket.tryConsume(1)){
+            return ResponseEntity.status(429).body("Rate limit exceeded");
+        }
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -70,9 +79,12 @@ public class AuthController {
         updateUserFailedAttempts(email, true);
     }
 
-    @PostMapping("/validateToken")
+    @PostMapping("/validateAdmin")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<Boolean> validateToken(@RequestBody Map<String, String> request) {
+    public ResponseEntity<Boolean> validateAdmin(@RequestBody Map<String, String> request) {
+        if(!bucket.tryConsume(1)){
+            return ResponseEntity.status(429).body(false);
+        }
         String token = request.get("token");
 
         boolean isValid = jwtUtill.validateTokenAdmin(token);
@@ -83,16 +95,52 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/validateToken")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<Boolean> validateToken(@RequestBody Map<String, String> request) {
+        if(!bucket.tryConsume(1)){
+            return ResponseEntity.status(429).body(false);
+        }
+        String token = request.get("token");
+
+        boolean isValid = jwtUtill.validateTokenUser(token);
+        if (isValid) {
+            return ResponseEntity.ok(true);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+        }
+    }
+
     @PostMapping("/submitForm")
     @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> submitForm(@RequestBody String formData, @RequestHeader("Authorization") String token) {
-        boolean isValid = jwtUtill.validateTokenAdmin(token);
+        if(!bucket.tryConsume(1)){
+            return ResponseEntity.status(429).body("Rate limit exceeded");
+        }
+        boolean isValid = jwtUtill.validateTokenUser(token);
 
         if (isValid) {
             System.out.println(formData + " - Success");
             return ResponseEntity.ok("Form submitted successfully");
         } else {
             System.out.println(formData + " - Token not ok");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+        }
+    }
+
+    @PostMapping("/submitFormAdmin")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<?> submitFormAdmin(@RequestBody String formData, @RequestHeader("Authorization") String token) {
+        if(!bucket.tryConsume(1)){
+            return ResponseEntity.status(429).body("Rate limit exceeded");
+        }
+        boolean isValid = jwtUtill.validateTokenAdmin(token);
+
+        if (isValid) {
+            System.out.println(formData + " - Success Admin Form");
+            return ResponseEntity.ok("Form submitted successfully");
+        } else {
+            System.out.println(formData + " - Admin Token Not Ok");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
         }
     }
